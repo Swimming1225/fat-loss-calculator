@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>电商KA销售减脂ing · 每日减脂计算器</title>
+<style>
+  :root {
+    --ink: #23405f;
+    --ink-soft: #5a7188;
+    --sun: #ffb838;
+    --sun-deep: #ff9f1a;
+    --sky: #45b4ff;
+    --sky-deep: #1b7fd6;
+    --green: #2ecc8f;
+    --red: #f25555;
+    --card: rgba(255, 255, 255, 0.82);
+    --line: rgba(35, 64, 95, 0.12);
+    --shadow: 0 16px 36px rgba(31, 91, 148, 0.12);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei",
+      "PingFang SC", "Hiragino Sans GB", sans-serif;
+    background:
+      radial-gradient(1100px 500px at 88% -5%, rgba(255, 215, 130, 0.85), transparent 60%),
+      radial-gradient(900px 520px at 5% 12%, rgba(140, 215, 255, 0.95), transparent 55%),
+      linear-gradient(180deg, #a9dcff 0%, #d3efff 42%, #fff3c9 74%, #ffe4a1 100%);
+    background-attachment: fixed;
+  }
+
+  .sun {
+    position: fixed;
+    top: -110px;
+    right: -60px;
+    width: 330px;
+    height: 330px;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff7d6 0%, #ffe27a 34%, rgba(255, 194, 62, 0.65) 58%, transparent 72%);
+    filter: blur(1px);
+    box-shadow: 0 0 90px rgba(255, 215, 110, 0.75);
+  }
+
+  .cloud {
+    position: fixed;
+    z-index: 0;
+    background: rgba(255, 255, 255, 0.72);
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  .cloud::before,
+  .cloud::after {
+    content: "";
+    position: absolute;
+    background: inherit;
+    border-radius: 50%;
+  }
+
+  .cloud.c1 {
+    width: 190px;
+    height: 46px;
+    top: 120px;
+    left: -45px;
+  }
+  .cloud.c1::before { width: 86px; height: 86px; left: 44px; top: -42px; }
+  .cloud.c1::after { width: 56px; height: 56px; left: 104px; top: -18px; }
+
+  .cloud.c2 {
+    width: 130px;
+    height: 34px;
+    top: 250px;
+    right: 60px;
+    opacity: 0.6;
+  }
+  .cloud.c2::before { width: 58px; height: 58px; left: 32px; top: -26px; }
+  .cloud.c2::after { width: 42px; height: 42px; left: 72px; top: -10px; }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 18px 16px 72px;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 40px 18px 28px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 7px 16px;
+    border-radius: 999px;
+    background: linear-gradient(100deg, #ffffff, #fff0bf);
+    border: 1px solid rgba(255, 190, 62, 0.65);
+    color: #b06b00;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    box-shadow: 0 6px 18px rgba(255, 183, 54, 0.25);
+  }
+
+  h1 {
+    margin: 18px 0 8px;
+    font-size: clamp(32px, 6vw, 54px);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--ink);
+  }
+
+  .hero-sub {
+    margin: 0 auto;
+    max-width: 700px;
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .quote-card {
+    position: relative;
+    margin: 26px auto 0;
+    max-width: 720px;
+    padding: 20px 26px 18px 52px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,244,208,.88));
+    border: 1px solid rgba(255, 190, 90, 0.4);
+    box-shadow: var(--shadow);
+    min-height: 106px;
+  }
+
+  .quote-card .qmark {
+    position: absolute;
+    top: 2px;
+    left: 16px;
+    font-size: 62px;
+    line-height: 1;
+    color: var(--sun);
+    opacity: 0.55;
+    font-family: Georgia, serif;
+  }
+
+  .quote-text {
+    margin: 4px 0 8px;
+    font-size: clamp(16px, 2.3vw, 19px);
+    line-height: 1.7;
+    font-weight: 600;
+    color: #3b4f62;
+    transition: opacity .35s ease;
+  }
+
+  .quote-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #b2843d;
+    font-size: 13px;
+  }
+
+  .quote-btn {
+    border: 1px solid rgba(255, 170, 60, 0.5);
+    background: #fffaf0;
+    color: #c17a15;
+    border-radius: 999px;
+    padding: 5px 13px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .quote-btn:hover { background: #fff2d4; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,.85);
+    border-radius: 26px;
+    padding: 22px 22px 24px;
+    margin: 0 0 24px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .card h2 {
+    margin: 0 0 14px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card .desc {
+    margin: -6px 0 16px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .step {
+    background: rgba(255,255,255,.58);
+    border: 1px solid rgba(255,255,255,.9);
+    border-radius: 17px;
+    padding: 13px 15px;
+    box-shadow: 0 6px 16px rgba(31, 91, 148, 0.06);
+  }
+
+  .step .n {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(120deg, var(--sun), var(--sun-deep));
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .step b { display: block; font-size: 14px; margin-bottom: 3px; }
+  .step small {
+    color: var(--ink-soft);
+    font-size: 12px;
+    line-height: 1.65;
+    display: block;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  label.field {
+    display: block;
+  }
+
+  label.field > span {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+
+  input[type=number],
+  input[type=text],
+  input[type=date],
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--ink);
+    border: 1px solid rgba(40, 100, 150, 0.2);
+    border-radius: 13px;
+    background: rgba(255,255,255,.85);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--sky);
+    box-shadow: 0 0 0 3px rgba(69, 180, 255, 0.18);
+  }
+
+  .actions {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(100deg, var(--sky), var(--sky-deep));
+    box-shadow: 0 8px 18px rgba(31, 127, 214, 0.25);
+    transition: transform .12s, filter .12s;
+  }
+  .btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+  .btn.sunny {
+    background: linear-gradient(100deg, var(--sun), #ff8e1e);
+    box-shadow: 0 8px 18px rgba(255, 150, 35, 0.28);
+  }
+  .btn.ghost {
+    background: rgba(255,255,255,.75);
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    box-shadow: none;
+  }
+
+  .metric-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .metric {
+    background: rgba(255,255,255,.72);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 13px 15px;
+    text-align: center;
+  }
+  .metric .k { font-size: 12px; color: var(--ink-soft); }
+  .metric .v {
+    font-size: 23px;
+    font-weight: 800;
+    margin-top: 4px;
+    color: var(--ink);
+  }
+  .metric .hint { font-size: 12px; color: var(--ink-soft); margin-top: 4px; line-height: 1.5; }
+
+  .seg {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 4px 0 14px;
+  }
+  .seg-item {
+    flex: 1;
+    min-width: 130px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--line);
+    background: rgba(255,255,255,.7);
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    text-align: center;
+    transition: all .15s;
+  }
+  .seg-item small {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    margin-top: 2px;
+    opacity: .85;
+  }
+  .seg-item.active {
+    background: linear-gradient(120deg, #ffe59a, #ffc857);
+    border-color: #ffbf44;
+    color: #8a5700;
+    box-shadow: 0 6px 16px rgba(255, 190, 70, 0.3);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    padding: 9px 8px;
+    border-bottom: 1.5px solid rgba(35,64,95,.14);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 8px;
+    border-bottom: 1px solid rgba(35,64,95,.08);
+    vertical-align: middle;
+  }
+
+  tbody tr.total-row td {
+    font-weight: 700;
+    border-top: 1.5px solid rgba(35,64,95,.15);
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(69,180,255,.14);
+    color: var(--sky-deep);
+  }
+  .pill.warn { background: rgba(255,150,30,.15); color: #c17400; }
+  .pill.ok { background: rgba(46,204,143,.15); color: #168b62; }
+  .pill.bad { background: rgba(242,85,85,.15); color: #d43a3a; }
+
+  .meal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .meal-card {
+    background: rgba(255,255,255,.66);
+    border: 1px solid rgba(255,255,255,.9);
+    border-radius: 20px;
+    padding: 14px;
+    box-shadow: 0 8px 22px rgba(31, 91, 148, 0.08);
+  }
+
+  .meal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .meal-head h3 {
+    margin: 0;
+    font-size: 16px;
+  }
+  .meal-head .pct {
+    font-size: 12px;
+    color: var(--ink-soft);
+    background: rgba(255,255,255,.8);
+    border-radius: 999px;
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
+
+  .table-scroll { overflow-x: auto; }
+  .meal-table { min-width: 640px; }
+  .meal-table th, .meal-table td { font-size: 12.5px; padding: 7px 5px; }
+  .meal-table select, .meal-table input[type=number] {
+    padding: 6px 7px;
+    font-size: 13px;
+    border-radius: 9px;
+    width: 100%;
+  }
+  .meal-table td.cat-col { min-width: 86px; }
+  .meal-table td.food-col { min-width: 150px; }
+  .meal-table td.amt-col { min-width: 86px; }
+  .meal-table td.num { text-align: right; white-space: nowrap; }
+
+  .row-del {
+    border: none;
+    width: 27px;
+    height: 27px;
+    border-radius: 9px;
+    background: rgba(242,85,85,.1);
+    color: #d43a3a;
+    font-size: 13px;
+    line-height: 1;
+  }
+  .row-del:hover { background: rgba(242,85,85,.22); }
+
+  .add-row {
+    margin-top: 10px;
+    width: 100%;
+    border: 1.5px dashed rgba(35,110,170,.28);
+    background: rgba(255,255,255,.45);
+    color: var(--sky-deep);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px;
+    border-radius: 12px;
+  }
+  .add-row:hover { background: rgba(69,180,255,.12); }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 92px 1fr 84px;
+    gap: 10px;
+    align-items: center;
+    margin: 10px 0;
+    font-size: 13px;
+  }
+  .bar-row .lbl { font-weight: 600; }
+  .bar { height: 12px; border-radius: 999px; background: rgba(35,64,95,.1); overflow: hidden; }
+  .bar > i {
+    display: block;
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--sun), var(--sun-deep));
+    transition: width .3s ease;
+  }
+  .bar.blue > i { background: linear-gradient(90deg, var(--sky), var(--sky-deep)); }
+  .bar.pink > i { background: linear-gradient(90deg, #ff9e9e, #f45b69); }
+  .bar.green > i { background: linear-gradient(90deg, #63e2b3, var(--green)); }
+  .bar > i.over { background: linear-gradient(90deg, #f76b6b, #e23a3a); }
+
+  .summary-status {
+    margin-top: 14px;
+    padding: 12px 15px;
+    border-radius: 15px;
+    background: rgba(69,180,255,.1);
+    color: var(--sky-deep);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .stage-table td input { max-width: 150px; }
+
+  .status-box {
+    margin-top: 16px;
+    border-radius: 18px;
+    padding: 15px 17px;
+    font-size: 14px;
+    line-height: 1.85;
+    background: rgba(46,204,143,.12);
+    border: 1px solid rgba(46,204,143,.25);
+    color: #177a58;
+    white-space: pre-line;
+  }
+  .status-box.warn {
+    background: rgba(255,175,50,.12);
+    border-color: rgba(255,175,50,.32);
+    color: #a36506;
+  }
+  .status-box.bad {
+    background: rgba(242,85,85,.1);
+    border-color: rgba(242,85,85,.28);
+    color: #bf3535;
+  }
+
+  .ref-table {
+    font-size: 13px;
+    background: rgba(255,255,255,.55);
+    border-radius: 16px;
+    padding: 10px;
+    margin-bottom: 14px;
+  }
+  .ref-table h4 { margin: 6px 2px 8px; font-size: 14px; }
+
+  .tips-list {
+    margin: 0;
+    padding: 0 0 0 22px;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 2;
+  }
+
+  footer {
+    text-align: center;
+    color: rgba(35,64,95,.55);
+    font-size: 12.5px;
+    line-height: 1.9;
+    margin-top: 18px;
+  }
+
+  @media (max-width: 640px) {
+    .card { padding: 16px 14px 18px; border-radius: 21px; }
+    .metric-strip { grid-template-columns: 1fr 1fr; }
+    .bar-row { grid-template-columns: 76px 1fr 66px; }
+  }
+</style>
+</head>
+<body>
+  <div class="sun"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+
+  <div class="wrap">
+    <header class="hero">
+      <span class="badge">☀️ 分享给每一个想开始的你</span>
+      <h1>电商KA销售减脂ing</h1>
+      <p class="hero-sub">
+        把这份减脂计算器发给朋友或同事：每个人打开后，填写自己的身高体重和运动量，
+        就能自动算出每日营养目标、记录三餐，并每 10 天复盘一次。数据只保存在各自的浏览器里。
+      </p>
+      <div class="quote-card">
+        <span class="qmark">“</span>
+        <p class="quote-text" id="quoteText"></p>
+        <div class="quote-foot">
+          <span id="quoteTag">给正在变好的你</span>
+          <button class="quote-btn" id="quoteNext" type="button">换一句 ↻</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="card" id="howto">
+      <h2>🚀 三步开始</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="n">1</span>
+          <b>填写你的信息</b>
+          <small>性别、身高体重、每周运动量；保存后自动算出每日目标与 BMI。</small>
+        </div>
+        <div class="step">
+          <span class="n">2</span>
+          <b>选择今天类型</b>
+          <small>训练日、有氧轻训或休息日，碳水目标会自动调整。</small>
+        </div>
+        <div class="step">
+          <span class="n">3</span>
+          <b>记录每一餐</b>
+          <small>先选分类再选食物，输入克数自动算碳水、蛋白、脂肪和热量。</small>
+        </div>
+        <div class="step">
+          <span class="n">4</span>
+          <b>每 10 天上称复盘</b>
+          <small>对比减脂速度，页面会提示该加碳水还是减碳水。</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="profile">
+      <h2>🙋 填写你的信息</h2>
+      <p class="desc">只在第一次填写，之后会自动保存在你自己浏览器的本地存储中（不会上传到任何地方）。</p>
+      <div class="grid">
+        <label class="field">
+          <span>称呼（可选）</span>
+          <input type="text" id="pName" placeholder="例如：小陈" autocomplete="off">
+        </label>
+        <label class="field">
+          <span>性别</span>
+          <select id="pGender">
+            <option value="">请选择</option>
+            <option value="男">男</option>
+            <option value="女">女</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>年龄（岁）</span>
+          <input type="number" id="pAge" min="10" max="100" placeholder="例如 28">
+        </label>
+        <label class="field">
+          <span>身高（cm）</span>
+          <input type="number" id="pHeight" min="120" max="230" step="0.1" placeholder="例如 170">
+        </label>
+        <label class="field">
+          <span>当前体重（kg）</span>
+          <input type="number" id="pWeight" min="30" max="300" step="0.1" placeholder="例如 65">
+        </label>
+        <label class="field">
+          <span>目标体重（kg，可选）</span>
+          <input type="number" id="pGoal" min="30" max="300" step="0.1" placeholder="例如 58">
+        </label>
+        <label class="field">
+          <span>每周运动量</span>
+          <select id="pFreq"></select>
+        </label>
+        <label class="field">
+          <span>是否有减脂/健身基础</span>
+          <select id="pBase">
+            <option value="否">否 · 第一次减脂</option>
+            <option value="是">是 · 之前减过脂/有健身基础</option>
+          </select>
+        </label>
+      </div>
+      <div class="actions">
+        <button class="btn sunny" id="saveProfile" type="button">💾 保存并计算目标</button>
+        <button class="btn ghost" id="clearProfile" type="button">🗑 清空本机数据</button>
+      </div>
+      <div class="metric-strip" id="bmiStrip">
+        <div class="metric"><div class="k">BMI 指数</div><div class="v" id="bmiValue">—</div><div class="hint" id="bmiHint">填写身高体重后自动计算</div></div>
+        <div class="metric"><div class="k">BMI 体型判断</div><div class="v" id="bmiType" style="font-size:16px">—</div><div class="hint">按 18.5 / 24 / 28 划分</div></div>
+        <div class="metric"><div class="k">理想体重范围</div><div class="v" id="idealWeight" style="font-size:18px">—</div><div class="hint">BMI 18.5 ~ 23.9</div></div>
+      </div>
+    </section>
+
+    <section class="card" id="dailyTarget">
+      <h2>🎯 今日营养目标</h2>
+      <p class="desc">碳水随今日类型自动调整：训练日 100% / 有氧轻训 70% / 休息日 50%；蛋白质和脂肪保持不变。</p>
+      <div class="seg" id="dayTypeSeg">
+        <button class="seg-item active" data-day="训练日">🏋️ 训练日<small>碳水 100% · 正常</small></button>
+        <button class="seg-item" data-day="有氧/轻训日">🚶 有氧/轻训日<small>碳水 70%</small></button>
+        <button class="seg-item" data-day="休息日">🛋️ 休息日<small>碳水 50%</small></button>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>营养素</th>
+              <th>系数 (g/kg)</th>
+              <th>基础目标</th>
+              <th>今日目标</th>
+              <th>热量 (kcal)</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody id="targetRows"></tbody>
+        </table>
+      </div>
+      <div class="summary-status" id="targetStatus"></div>
+    </section>
+
+    <section class="card" id="mealLog">
+      <h2>🍽️ 今日饮食记录</h2>
+      <p class="desc">
+        选择日期（默认今天）→ 每餐先选“分类”，再选“食物名称”，输入食用量即自动计算。
+        米饭/燕麦/肉类按生重，红薯玉米按鲜重，带“（按个）”的按个计算。
+      </p>
+      <div class="grid" style="grid-template-columns: minmax(160px, 220px) 1fr; margin-bottom: 14px;">
+        <label class="field">
+          <span>记录日期</span>
+          <input type="date" id="logDate">
+        </label>
+      </div>
+      <div class="meal-grid" id="mealGrid"></div>
+    </section>
+
+    <section class="card" id="summary">
+      <h2>📊 全天摄入汇总</h2>
+      <p class="desc">把五餐吃进去的每一克，都对标到今天的目标上看一看。</p>
+      <div id="summaryBars"></div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th>项目</th><th>碳水 (g)</th><th>蛋白质 (g)</th><th>脂肪 (g)</th><th>热量 (kcal)</th></tr>
+          </thead>
+          <tbody id="summaryRows"></tbody>
+        </table>
+      </div>
+      <div class="summary-status" id="summaryStatus"></div>
+    </section>
+
+    <section class="card" id="tracker">
+      <h2>⚖️ 每 10 天上称 · 减脂节奏复盘</h2>
+      <p class="desc">
+        晨起空腹、上完厕所后称重，保持同一台秤、同一时间、相似穿着。
+        填好“第0天”基线后，之后每 10 天记录一次，页面会按表内标准判断节奏并给调整方向。
+      </p>
+      <div class="table-scroll">
+        <table class="stage-table">
+          <thead>
+            <tr><th>阶段</th><th>日期</th><th>体重 (kg)</th><th>较上一记录</th><th>备注</th></tr>
+          </thead>
+          <tbody id="stageBody"></tbody>
+        </table>
+      </div>
+      <div class="status-box" id="paceStatus">📝 请先填写第 0 天基线体重。</div>
+    </section>
+
+    <section class="card">
+      <h2>💡 每日执行清单</h2>
+      <ul class="tips-list">
+        <li>蔬菜不限量，建议每餐 200–300g；蛋白质来源可以互换（鸡胸 ↔ 鸡腿 ↔ 鱼 ↔ 虾）。</li>
+        <li>主食按生重计算（燕麦、大米为生重；红薯、紫薯、南瓜按鲜重）；肉类按生重计算。</li>
+        <li>选择今日类型后，只有碳水会自动调整；蛋白质、脂肪保持不变。</li>
+        <li>三餐吃不下时，启用午加餐 / 晚加餐，把全天目标拆到五餐更容易坚持。</li>
+        <li>每 10 天在上称日更新一次体重，连续 2 个周期（20 天）没变化再减量，避免误判。</li>
+        <li>每日饮水 1500–2500ml；减脂不是减重，多关注体脂和腰围变化。</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>📚 系数与节奏参考</h2>
+      <div id="refTables"></div>
+    </section>
+
+    <footer>
+      计算逻辑参考原表系数与速度标准制作，仅作饮食管理参考，不构成医疗、营养师建议。<br>
+      数据只保存在你自己的浏览器里，清缓存会清空记录。
+    </footer>
+  </div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------- 食物库（自原表食材库整理，100g 基准；鸡蛋等按个）----------
+  const FOOD_CATS = [
+    { key: "staple", label: "主食", color: "#ffc04d",
+      items: [
+        ["燕麦（干）", 100, 60, 13, 7, 377, "早餐首选，膳食纤维丰富"],
+        ["熟米饭", 100, 28.5, 2.5, 0.3, 130, "蒸熟后的米饭"],
+        ["大米（生）", 100, 78.5, 7.4, 0.8, 346, "午餐主食，生重计算"],
+        ["红薯（生）", 100, 22, 1.6, 0.1, 99, "晚餐主食，饱腹感强"],
+        ["紫薯（生）", 100, 22, 1.5, 0.2, 90, "富含花青素"],
+        ["土豆（生）", 100, 22, 2, 0.2, 81, "可替代红薯"],
+        ["贝贝南瓜（生）", 100, 22, 1.5, 0.1, 85, "低碳水主食"],
+        ["荞麦面（干）", 100, 70, 12, 2, 343, "可替代米饭"],
+        ["全麦面包", 100, 45, 9, 3, 250, "早餐可选"],
+        ["玉米（鲜）", 100, 19, 3.5, 1.5, 106, "可替代主食"],
+        ["糙米（生）", 100, 77, 7.7, 2.7, 348, "粗粮主食"],
+        ["藜麦（生）", 100, 64, 14, 6, 368, "高蛋白主食"],
+        ["山药（生）", 100, 12, 1.9, 0.2, 57, "可替代主食"],
+        ["芋头（生）", 100, 18, 2.2, 0.2, 81, "饱腹感强"],
+        ["意面（干）", 100, 75, 11, 1.5, 351, "西餐主食"],
+        ["米糊", 100, 90, 5.4, 0.8, 395, "练后快速碳水"]
+      ]
+    },
+    { key: "protein", label: "蛋白质", color: "#ff8b7d",
+      items: [
+        ["全蛋（按个）", 1, 0.4, 7, 4, 72, "每个约50g，优质蛋白"],
+        ["蛋白（按个）", 1, 0.2, 3.6, 0.1, 17, "仅蛋白部分"],
+        ["鸡胸肉（生）", 100, 0, 24, 1, 110, "低脂高蛋白首选"],
+        ["去皮去骨鸡腿（生）", 100, 0, 24, 4, 130, "口感比鸡胸好"],
+        ["牛肉（生）", 100, 0, 24, 5, 145, "晚餐首选，富含铁锌"],
+        ["瘦猪肉（生）", 100, 0, 22, 6, 143, "可替代牛肉"],
+        ["虾仁（生）", 100, 0, 20, 0.5, 85, "低脂高蛋白"],
+        ["龙利鱼（生）", 100, 0, 18, 2, 88, "低脂白肉，易消化"],
+        ["巴沙鱼（生）", 100, 0, 14, 5, 100, "性价比高"],
+        ["三文鱼（生）", 100, 0, 20, 13, 200, "富含Omega-3"],
+        ["蛋白粉", 100, 5, 75, 2, 340, "训练后补充，每勺约30g"],
+        ["牛奶", 100, 5, 3, 3.2, 65, "全脂牛奶"],
+        ["无糖酸奶", 100, 4, 3, 3, 59, "可选加餐"],
+        ["豆腐", 100, 2, 8, 4, 76, "植物蛋白"],
+        ["金枪鱼（水浸）", 100, 0, 25, 1, 110, "罐头即食"],
+        ["蟹柳", 100, 8, 10, 0.5, 75, "低脂即食"]
+      ]
+    },
+    { key: "fat", label: "脂肪", color: "#9ecbff",
+      items: [
+        ["南瓜籽", 100, 15, 30, 50, 580, "早餐脂肪来源"],
+        ["坚果", 100, 18, 18, 60, 650, "混合坚果，晚餐脂肪来源"],
+        ["杏仁", 100, 20, 21, 50, 579, "富含维E"],
+        ["核桃", 100, 14, 15, 65, 654, "富含Omega-3"],
+        ["橄榄油", 100, 0, 0, 100, 900, "烹饪用油，烟点适中"],
+        ["牛油果油", 100, 0, 0, 100, 900, "烟点高，适合爆炒"],
+        ["山茶油", 100, 0, 0, 100, 900, "烟点高"],
+        ["低芥酸菜籽油", 100, 0, 0, 100, 900, "性价比高"],
+        ["猪油", 100, 0, 0, 100, 900, "动物油脂"],
+        ["牛油", 100, 0, 0, 100, 900, "动物油脂"],
+        ["花生酱", 100, 20, 25, 50, 600, "无添加糖盐"],
+        ["牛油果", 100, 9, 2, 15, 160, "优质脂肪来源"],
+        ["奇亚籽", 100, 42, 17, 31, 486, "富含膳食纤维"],
+        ["亚麻籽", 100, 29, 18, 42, 534, "富含Omega-3"],
+        ["芝麻酱", 100, 17, 20, 53, 595, "无添加糖盐"]
+      ]
+    },
+    { key: "veg", label: "蔬菜", color: "#7ed9a3",
+      items: [
+        ["蔬菜", 100, 4, 2.5, 0.3, 30, "综合蔬菜，可忽略不计"],
+        ["西兰花", 100, 4, 2.8, 0.4, 34, "高纤维"],
+        ["菠菜", 100, 3.6, 2.6, 0.3, 28, "富含铁和叶酸"],
+        ["生菜", 100, 2, 1.4, 0.2, 15, "生食蔬菜"],
+        ["羽衣甘蓝", 100, 5, 3, 0.5, 35, "营养密度极高"],
+        ["苋菜", 100, 4, 2.5, 0.3, 30, "绿叶菜"],
+        ["菇类", 100, 4, 2.5, 0.3, 30, "香菇/平菇/杏鲍菇等"],
+        ["萝卜", 100, 4, 1, 0.2, 22, "可生食"],
+        ["西红柿", 100, 4, 0.9, 0.2, 19, "可生食"],
+        ["彩椒", 100, 6, 1, 0.2, 26, "富含维C"],
+        ["黄瓜", 100, 2.9, 0.8, 0.2, 16, "可生食"],
+        ["芹菜", 100, 3, 1.2, 0.2, 18, "高纤维"],
+        ["豆芽", 100, 3, 2, 0.2, 22, "低脂低卡"],
+        ["芦笋", 100, 4, 2.6, 0.2, 27, "营养丰富"],
+        ["茄子", 100, 6, 1, 0.2, 28, "吸油需注意"],
+        ["冬瓜", 100, 2.6, 0.4, 0.2, 12, "极低热量"]
+      ]
+    },
+    { key: "fruit", label: "水果", color: "#ffd66b",
+      items: [
+        ["蓝莓", 100, 14, 0.7, 0.3, 57, "早餐搭配，可忽略不计"],
+        ["草莓", 100, 7.7, 0.7, 0.3, 32, "低糖水果"],
+        ["苹果", 100, 14, 0.3, 0.2, 53, "加餐可选"],
+        ["香蕉", 100, 23, 1.1, 0.3, 91, "训练前后可选"],
+        ["水蜜桃", 100, 10, 0.6, 0.1, 42, "低糖水果"],
+        ["橙子", 100, 12, 0.9, 0.1, 47, "富含维C"],
+        ["柚子", 100, 9, 0.8, 0.2, 38, "低糖水果"],
+        ["猕猴桃", 100, 14, 1.1, 0.5, 56, "富含维C"],
+        ["火龙果", 100, 13, 1.2, 0.2, 55, "膳食纤维丰富"],
+        ["樱桃", 100, 16, 1.1, 0.3, 63, "低糖水果"],
+        ["葡萄", 100, 18, 0.5, 0.2, 69, "糖分较高，适量"],
+        ["西瓜", 100, 7.6, 0.6, 0.1, 30, "水分多，适量"],
+        ["梨", 100, 15, 0.4, 0.2, 57, "加餐可选"],
+        ["木瓜", 100, 10, 0.5, 0.1, 42, "低糖水果"],
+        ["菠萝", 100, 13, 0.5, 0.1, 50, "适量食用"]
+      ]
+    }
+  ];
+
+  const FREQ_OPTIONS = [
+    { key: "low", label: "低频 · 2-3小时/2次", male: [2.2, 1.4, 0.8], female: [2.0, 1.4, 1.0] },
+    { key: "mid", label: "中频 · 4-5小时/3次", male: [2.5, 1.6, 0.9], female: [2.2, 1.6, 1.1] },
+    { key: "high", label: "高频 · 6-7小时/4次", male: [3.0, 1.7, 1.0], female: [2.5, 1.7, 1.1] },
+    { key: "vhigh", label: "极高频 · 8-9小时/5次", male: [3.5, 1.8, 1.0], female: [3.0, 1.8, 1.2] }
+  ];
+
+  const DAY_TYPES = {
+    "训练日": 1,
+    "有氧/轻训日": 0.7,
+    "休息日": 0.5
+  };
+
+  const MEALS = [
+    { key: "breakfast", icon: "🌅", name: "早餐", pct: "建议 30%", optional: false },
+    { key: "snack1", icon: "🍎", name: "午加餐", pct: "可选 · 10%", optional: true },
+    { key: "lunch", icon: "☀️", name: "午餐", pct: "建议 30%", optional: false },
+    { key: "snack2", icon: "🥜", name: "晚加餐", pct: "可选 · 10%", optional: true },
+    { key: "dinner", icon: "🌙", name: "晚餐", pct: "建议 20%", optional: false }
+  ];
+
+  const QUOTES = [
+    "别把今天的疲惫留给明天，先吃对今天这一顿。",
+    "每一克蛋白质，都是你向想要的身材靠近的底气。",
+    "把做 KA 的韧劲用来管理自己，你也能成为自己的爆款。",
+    "体重会骗人，围度和状态不会；坚持记录，答案会自己浮出来。",
+    "减脂不是饿出来的，是算出来、吃对、再日复一日做出来的。",
+    "今天的每一口克制，都会在未来的镜子里被放大。",
+    "慢一点没关系，方向对了，每 10 天都算数。",
+    "大促有节奏，减脂也要有节奏：稳定，才能赢到最后。"
+  ];
+
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+
+  const todayStr = () => {
+    const d = new Date();
+    const p = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  };
+
+  const round1 = (v) => Math.round((Number(v) || 0) * 10) / 10;
+  const round0 = (v) => Math.round(Number(v) || 0);
+
+  const DEFAULT_PROFILE = {
+    name: "",
+    gender: "",
+    age: "",
+    height: "",
+    weight: "",
+    goal: "",
+    freq: "mid",
+    base: "否"
+  };
+
+  const DB_KEY = "eka-fatloss-calculator-v1";
+  let db = null;
+
+  function loadDb() {
+    const fallback = {
+      profile: Object.assign({}, DEFAULT_PROFILE),
+      dayType: "训练日",
+      selectedDate: todayStr(),
+      logs: {},
+      weights: {}
+    };
+    try {
+      const raw = localStorage.getItem(DB_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        db = Object.assign(fallback, parsed);
+        db.profile = Object.assign({}, DEFAULT_PROFILE, parsed.profile || {});
+        db.logs = parsed.logs || {};
+        db.weights = parsed.weights || {};
+      } else {
+        db = fallback;
+      }
+    } catch (e) {
+      db = fallback;
+    }
+  }
+
+  function saveDb() {
+    try {
+      localStorage.setItem(DB_KEY, JSON.stringify(db));
+    } catch (e) {
+      console.warn("保存失败", e);
+    }
+  }
+
+  function getFoodItem(catKey, name) {
+    const cat = FOOD_CATS.find((c) => c.key === catKey);
+    if (!cat) return null;
+    const item = cat.items.find((it) => it[0] === name);
+    return item ? { cat: catKey, catLabel: cat.label, name: item[0], base: item[1], carb: item[2], protein: item[3], fat: item[4], kcal: item[5], note: item[6] || "" } : null;
+  }
+
+  function getFreqOption(key) {
+    return FREQ_OPTIONS.find((f) => f.key === key) || FREQ_OPTIONS[1];
+  }
+
+  // ---------- 金句 ----------
+  let quoteIdx = 0;
+  function pickQuote() {
+    const seed = todayStr().split("-").join("");
+    quoteIdx = Number(seed.slice(-2)) % QUOTES.length;
+    showQuote();
+  }
+  function showQuote() {
+    const el = $("#quoteText");
+    el.style.opacity = 0;
+    setTimeout(() => {
+      el.textContent = QUOTES[quoteIdx % QUOTES.length];
+      el.style.opacity = 1;
+    }, 180);
+    $("#quoteTag").textContent = "☀️ 给正在变好的你";
+  }
+
+  // ---------- 渲染：运动频率下拉 ----------
+  function initFreqSelect() {
+    const sel = $("#pFreq");
+    sel.innerHTML = FREQ_OPTIONS.map((f) =>
+      `<option value="${f.key}">${f.label}</option>`).join("");
+  }
+
+  // ---------- 渲染：BMI / 目标 ----------
+  function currentProfileValid() {
+    const p = db.profile;
+    return p.gender && Number(p.height) > 0 && Number(p.weight) > 0;
+  }
+
+  function computeTargets() {
+    if (!currentProfileValid()) return null;
+    const p = db.profile;
+    const weight = Number(p.weight);
+    const opt = getFreqOption(p.freq);
+    const coef = p.gender === "男" ? opt.male : opt.female;
+    const dayFactor = DAY_TYPES[db.dayType] ?? 1;
+    const baseC = round1(weight * coef[0]);
+    const todayC = round1(baseC * dayFactor);
+    const baseP = round1(weight * coef[1]);
+    const todayP = baseP;
+    const baseF = round1(weight * coef[2]);
+    const todayF = baseF;
+    const calC = round0(todayC * 4);
+    const calP = round0(todayP * 4);
+    const calF = round0(todayF * 9);
+    return {
+      weight,
+      coef,
+      dayFactor,
+      baseC, todayC, baseP, todayP, baseF, todayF,
+      kcalC: calC, kcalP: calP, kcalF: calF,
+      kcal: calC + calP + calF,
+      grams: round1(todayC + todayP + todayF)
+    };
+  }
+
+  function renderBmi() {
+    const p = db.profile;
+    const h = Number(p.height);
+    const w = Number(p.weight);
+    const bmiVal = $("#bmiValue");
+    const bmiType = $("#bmiType");
+    const ideal = $("#idealWeight");
+    if (!h || !w) {
+      bmiVal.textContent = "—";
+      bmiType.textContent = "—";
+      ideal.textContent = "—";
+      return;
+    }
+    const bmi = Math.round(w / Math.pow(h / 100, 2) * 10) / 10;
+    bmiVal.textContent = bmi.toFixed(1);
+    let typeText = "", cls = "pill";
+    if (bmi < 18.5) {
+      typeText = "⚠️ 偏瘦（<18.5）";
+      cls = "pill warn";
+    } else if (bmi < 24) {
+      typeText = "✅ 正常（18.5~23.9）";
+      cls = "pill ok";
+    } else if (bmi < 28) {
+      typeText = "⚠️ 超重（24~27.9）";
+      cls = "pill warn";
+    } else {
+      typeText = "🔴 肥胖（≥28）";
+      cls = "pill bad";
+    }
+    bmiType.innerHTML = `<span class="${cls}">${typeText}</span>`;
+    const low = Math.round(18.5 * Math.pow(h / 100, 2) * 10) / 10;
+    const high = Math.round(23.9 * Math.pow(h / 100, 2) * 10) / 10;
+    ideal.textContent = `${low.toFixed(1)} ~ ${high.toFixed(1)} kg`;
+  }
+
+  function renderTargets() {
+    renderBmi();
+    const valid = currentProfileValid();
+    const tbody = $("#targetRows");
+    const target = computeTargets();
+    const p = db.profile;
+    const weight = Number(p.weight);
+
+    if (!valid || !target) {
+      tbody.innerHTML = `
+        <tr><td colspan="6" style="color:var(--ink-soft);padding:14px 8px;">
+          请先填写性别、身高、当前体重并点击“保存并计算目标”。</td></tr>`;
+      $("#targetStatus").textContent = "📝 等待个人信息…";
+      return;
+    }
+
+    const rows = [
+      ["碳水化合物", target.coef[0], target.baseC, target.todayC, target.kcalC, `${db.dayType === "训练日" ? "训练日 100%" : db.dayType === "有氧/轻训日" ? "有氧日 70%" : "休息日 50%"}`],
+      ["蛋白质", target.coef[1], target.baseP, target.todayP, target.kcalP, "保护肌肉，各日型不变"],
+      ["脂肪", target.coef[2], target.baseF, target.todayF, target.kcalF, "维持激素，各日型不变"]
+    ];
+    tbody.innerHTML = rows.map((r) => `
+      <tr>
+        <td><b>${r[0]}</b></td>
+        <td>${r[1]}</td>
+        <td>${r[2]} g</td>
+        <td style="font-weight:700;color:var(--sky-deep)">${r[3]} g</td>
+        <td>${r[4]} kcal</td>
+        <td style="font-size:12px;color:var(--ink-soft)">${r[5]}</td>
+      </tr>`).join("") + `
+      <tr class="total-row">
+        <td>每日总计</td><td>—</td>
+        <td>${round1(target.baseC + target.baseP + target.baseF)} g</td>
+        <td style="color:var(--sky-deep)">${target.grams} g</td>
+        <td>${target.kcal} kcal</td>
+        <td style="font-size:12px;color:var(--ink-soft)">今日总热量目标</td>
+      </tr>`;
+
+    let goalMsg = "";
+    if (p.goal) {
+      const diff = round1(weight - Number(p.goal));
+      if (diff > 0) goalMsg = `距离目标体重还差 ${diff.toFixed(1)} kg，按健康节奏约需 ${Math.ceil(diff / 0.5 * 7)} 天以上，稳住。`;
+      else if (diff < 0) goalMsg = "目标体重高于当前体重，先以健康体脂为准，不必追求更低。";
+    }
+    const dayFactorText = db.dayType === "训练日" ? "100%" : db.dayType === "有氧/轻训日" ? "70%" : "50%";
+    $("#targetStatus").innerHTML = `今日为<b>${db.dayType}</b>，碳水目标 = 基础 ${target.baseC} g × ${dayFactorText} = <b>${target.todayC} g</b>；蛋白质、脂肪不随日型变化。${goalMsg ? "<br>🎯 " + goalMsg : ""}`;
+  }
+
+  // ---------- 饮食记录 ----------
+  function getLog() {
+    const date = db.selectedDate || todayStr();
+    if (!db.logs[date]) {
+      db.logs[date] = { meals: {} };
+      MEALS.forEach((m) => { db.logs[date].meals[m.key] = []; });
+    }
+    return db.logs[date];
+  }
+
+  function catOptions(selectedCat) {
+    return FOOD_CATS.map((c) =>
+      `<option value="${c.key}" ${c.key === selectedCat ? "selected" : ""}>${c.label}</option>`).join("");
+  }
+
+  function foodOptions(catKey, selectedName) {
+    const cat = FOOD_CATS.find((c) => c.key === catKey);
+    if (!cat) return `<option value="">请先选择分类</option>`;
+    let html = `<option value="">— 请选择食物 —</option>`;
+    html += cat.items.map((it) => {
+      const unit = it[0].includes("（按个）") ? "（按个）" : "";
+      return `<option value="${it[0]}" ${it[0] === selectedName ? "selected" : ""}>${it[0]}${unit ? "" : " /100g"}</option>`;
+    }).join("");
+    return html;
+  }
+
+  function unitFor(catKey, name) {
+    return name && name.includes("（按个）") ? "个" : "g";
+  }
+
+  function calcRow(rowEl) {
+    const catKey = $(".cat", rowEl).value;
+    const name = $(".food", rowEl).value;
+    const amount = Number($(".amount", rowEl).value);
+    const cells = {
+      c: $(".m-c", rowEl),
+      p: $(".m-p", rowEl),
+      f: $(".m-f", rowEl),
+      k: $(".m-k", rowEl)
+    };
+    if (!catKey || !name || !(amount > 0)) {
+      Object.values(cells).forEach((el) => { el.textContent = "0"; });
+      return null;
+    }
+    const food = getFoodItem(catKey, name);
+    if (!food) return null;
+    const factor = amount / food.base;
+    const c = round1(food.carb * factor);
+    const p = round1(food.protein * factor);
+    const f = round1(food.fat * factor);
+    const k = round0(food.kcal * factor);
+    cells.c.textContent = c;
+    cells.p.textContent = p;
+    cells.f.textContent = f;
+    cells.k.textContent = k;
+    return { c, p, f, k };
+  }
+
+  function addMealRow(mealKey, data) {
+    const tbody = $(`tbody[data-meal="${mealKey}"]`);
+    if (!tbody) return;
+    const dataCat = data && data.cat ? data.cat : "staple";
+    const dataFood = data && data.food ? data.food : "";
+    const dataAmount = data && data.amount != null ? data.amount : "";
+    const tr = document.createElement("tr");
+    tr.className = "meal-row";
+    tr.dataset.meal = mealKey;
+    tr.innerHTML = `
+      <td class="cat-col"><select class="cat">${catOptions(dataCat)}</select></td>
+      <td class="food-col"><select class="food">${foodOptions(dataCat, dataFood)}</select></td>
+      <td class="amt-col">
+        <div style="display:flex;gap:4px;align-items:center;">
+          <input class="amount" type="number" min="0" step="0.1" value="${dataAmount}">
+          <span class="unit" style="font-size:11px;color:var(--ink-soft);white-space:nowrap;">${dataFood ? unitFor(dataCat, dataFood) : "g"}</span>
+        </div>
+      </td>
+      <td class="num m-c">0</td>
+      <td class="num m-p">0</td>
+      <td class="num m-f">0</td>
+      <td class="num m-k">0</td>
+      <td><button class="row-del" type="button" title="删除">✕</button></td>`;
+    tbody.appendChild(tr);
+
+    $(".cat", tr).addEventListener("change", (e) => {
+      const cat = e.target.value;
+      $(".food", tr).innerHTML = foodOptions(cat, "");
+      $(".unit", tr).textContent = "g";
+      calcRow(tr);
+      saveMealsFromDom();
+    });
+    $(".food", tr).addEventListener("change", (e) => {
+      const cat = $(".cat", tr).value;
+      $(".unit", tr).textContent = unitFor(cat, e.target.value);
+      calcRow(tr);
+      saveMealsFromDom();
+    });
+    $(".amount", tr).addEventListener("input", () => {
+      calcRow(tr);
+      saveMealsFromDom();
+    });
+    $(".row-del", tr).addEventListener("click", () => {
+      tr.remove();
+      saveMealsFromDom();
+    });
+    calcRow(tr);
+  }
+
+  function saveMealsFromDom() {
+    const log = getLog();
+    MEALS.forEach((m) => {
+      const rows = $$(`tbody[data-meal="${m.key}"] tr.meal-row`);
+      const list = [];
+      rows.forEach((tr) => {
+        const cat = $(".cat", tr).value;
+        const food = $(".food", tr).value;
+        const amount = Number($(".amount", tr).value);
+        if (cat && food && amount > 0) list.push({ cat, food, amount });
+      });
+      log.meals[m.key] = list;
+    });
+    db.logs[db.selectedDate] = log;
+    saveDb();
+    renderSummary();
+  }
+
+  function renderMeals() {
+    const grid = $("#mealGrid");
+    grid.innerHTML = "";
+    const log = getLog();
+    MEALS.forEach((m) => {
+      const card = document.createElement("section");
+      card.className = "meal-card";
+      card.innerHTML = `
+        <div class="meal-head">
+          <h3>${m.icon} ${m.name}</h3>
+          <span class="pct">${m.pct}</span>
+        </div>
+        <div class="table-scroll">
+          <table class="meal-table">
+            <thead>
+              <tr><th>分类</th><th>食物名称</th><th>食用量</th><th>碳水</th><th>蛋白</th><th>脂肪</th><th>热量</th><th></th></tr>
+            </thead>
+            <tbody data-meal="${m.key}"></tbody>
+          </table>
+        </div>
+        <button class="add-row" type="button" data-add="${m.key}">＋ 添加一行</button>`;
+      grid.appendChild(card);
+    });
+
+    MEALS.forEach((m) => {
+      const rows = log.meals[m.key] || [];
+      if (!rows.length) {
+        addMealRow(m.key, { cat: "staple", food: "", amount: "" });
+      } else {
+        rows.forEach((r) => addMealRow(m.key, r));
+      }
+    });
+
+    $$(".add-row").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        addMealRow(btn.dataset.add, { cat: "staple", food: "", amount: "" });
+      });
+    });
+    renderSummary();
+  }
+
+  function readMealTotals() {
+    const totals = { c: 0, p: 0, f: 0, k: 0 };
+    $$("tr.meal-row").forEach((tr) => {
+      const c = Number($(".m-c", tr).textContent) || 0;
+      const p = Number($(".m-p", tr).textContent) || 0;
+      const f = Number($(".m-f", tr).textContent) || 0;
+      const k = Number($(".m-k", tr).textContent) || 0;
+      totals.c += c; totals.p += p; totals.f += f; totals.k += k;
+    });
+    totals.c = round1(totals.c);
+    totals.p = round1(totals.p);
+    totals.f = round1(totals.f);
+    totals.k = round0(totals.k);
+    return totals;
+  }
+
+  function bar(label, cls, actual, target, unit) {
+    const targetVal = Number(target) || 0;
+    const pct = targetVal > 0 ? Math.min(actual / targetVal * 100, 110) : 0;
+    const over = targetVal > 0 && actual > targetVal * 1.1;
+    const pctText = targetVal > 0 ? Math.round(actual / targetVal * 100) : 0;
+    return `
+      <div class="bar-row">
+        <div class="lbl">${label}</div>
+        <div class="bar ${cls}"><i class="${over ? "over" : ""}" style="width:${pct}%"></i></div>
+        <div style="text-align:right;white-space:nowrap;">${round1(actual)} / ${targetVal} ${unit} · ${pctText}%</div>
+      </div>`;
+  }
+
+  function renderSummary() {
+    const target = computeTargets();
+    const actual = readMealTotals();
+    const barsEl = $("#summaryBars");
+    const rowsEl = $("#summaryRows");
+    const statusEl = $("#summaryStatus");
+
+    if (!target) {
+      barsEl.innerHTML = "";
+      rowsEl.innerHTML = `<tr><td colspan="5" style="color:var(--ink-soft);padding:14px;">先填写个人信息计算今日目标。</td></tr>`;
+      statusEl.textContent = "";
+      return;
+    }
+
+    barsEl.innerHTML =
+      bar("碳水", "bar", actual.c, target.todayC, "g") +
+      bar("蛋白质", "bar blue", actual.p, target.todayP, "g") +
+      bar("脂肪", "bar pink", actual.f, target.todayF, "g") +
+      bar("热量", "bar green", actual.k, target.kcal, "kcal");
+
+    rowsEl.innerHTML = `
+      <tr><td>今日目标</td><td>${target.todayC}</td><td>${target.todayP}</td><td>${target.todayF}</td><td>${target.kcal}</td></tr>
+      <tr><td>实际摄入</td><td>${actual.c}</td><td>${actual.p}</td><td>${actual.f}</td><td>${actual.k}</td></tr>
+      <tr class="total-row">
+        <td>差异（实际-目标）</td>
+        <td>${round1(actual.c - target.todayC)}</td>
+        <td>${round1(actual.p - target.todayP)}</td>
+        <td>${round1(actual.f - target.todayF)}</td>
+        <td>${actual.k - target.kcal}</td>
+      </tr>`;
+
+    const diff = actual.k - target.kcal;
+    let msg = "";
+    if (actual.k === 0) {
+      msg = "🍽️ 还没记录食物，先从早餐开始，把今天的第一餐吃对。";
+    } else if (Math.abs(diff) / target.kcal < 0.1) {
+      msg = `✅ 接近目标！实际热量 ${actual.k} kcal，和目标相差不到 10%，继续保持。`;
+    } else if (diff < 0) {
+      msg = `⬇️ 摄入不足：还差 ${-diff} kcal。看看午加餐/晚餐，把蛋白质和适量主食补上，别靠饿。`;
+    } else {
+      msg = `⬆️ 摄入略超：超出 ${diff} kcal。若某餐吃多了，下一餐优先减碳水或油，不用自责，下一餐扳回来。`;
+    }
+    statusEl.textContent = msg;
+  }
+
+  // ---------- 上称 / 节奏追踪 ----------
+  const STAGES = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90];
+
+  function renderStages() {
+    const tbody = $("#stageBody");
+    tbody.innerHTML = "";
+    const hasBase = db.profile.base === "是";
+    STAGES.forEach((day) => {
+      const key = String(day);
+      const rec = db.weights[key] || {};
+      const tr = document.createElement("tr");
+      tr.dataset.day = day;
+      tr.innerHTML = `
+        <td><b>${day === 0 ? "第0天（基线）" : "第" + day + "天"}</b></td>
+        <td><input type="date" class="stage-date" value="${rec.date || ""}"></td>
+        <td><input type="number" class="stage-weight" min="20" max="300" step="0.1" value="${rec.weight != null ? rec.weight : ""}" placeholder="体重 kg"></td>
+        <td class="stage-diff">—</td>
+        <td><input type="text" class="stage-note" value="${rec.note || ""}" placeholder="备注（可选）" style="width:100%;min-width:100px;"></td>`;
+      tbody.appendChild(tr);
+
+      $(".stage-date", tr).addEventListener("change", saveStage);
+      $(".stage-weight", tr).addEventListener("input", saveStage);
+      $(".stage-note", tr).addEventListener("change", saveStage);
+    });
+    renderStageDiffs();
+  }
+
+  function saveStage(e) {
+    const tr = e.currentTarget.closest("tr");
+    const day = Number(tr.dataset.day);
+    const weight = $(".stage-weight", tr).value;
+    const date = $(".stage-date", tr).value;
+    const note = $(".stage-note", tr).value;
+    const rec = db.weights[String(day)] || {};
+    if (weight === "" && date === "" && note === "") {
+      delete db.weights[String(day)];
+    } else {
+      rec.weight = weight === "" ? null : Number(weight);
+      rec.date = date;
+      rec.note = note;
+      db.weights[String(day)] = rec;
+    }
+    saveDb();
+    renderStageDiffs();
+    renderPace();
+  }
+
+  function renderStageDiffs() {
+    let prev = null;
+    STAGES.forEach((day) => {
+      const tr = $(`tr[data-day="${day}"]`);
+      if (!tr) return;
+      const rec = db.weights[String(day)];
+      const w = rec && rec.weight != null ? Number(rec.weight) : null;
+      const diffEl = $(".stage-diff", tr);
+      if (w == null || prev == null) {
+        diffEl.textContent = w != null && day === 0 ? "—" : "—";
+      } else {
+        const diff = round1(prev - w);
+        diffEl.textContent = diff > 0 ? "↓ " + diff.toFixed(1) + " kg" : diff < 0 ? "↑ " + Math.abs(diff).toFixed(1) + " kg" : "0.0 kg（持平）";
+        diffEl.style.color = diff > 0 ? "#168b62" : diff < 0 ? "#d43a3a" : "#999";
+      }
+      if (w != null) prev = w;
+    });
+    renderPace();
+  }
+
+  function paceBonus() {
+    const f = db.profile.freq;
+    if (f === "vhigh") return 5;
+    if (f === "high") return 3;
+    if (f === "mid") return 0;
+    return -2;
+  }
+
+  function renderPace() {
+    const box = $("#paceStatus");
+    const filled = STAGES.map((d) => {
+      const rec = db.weights[String(d)];
+      return { day: d, w: rec && rec.weight != null ? Number(rec.weight) : null };
+    }).filter((r) => r.w != null);
+    if (filled.length < 2) {
+      box.className = "status-box";
+      box.textContent = filled.length === 0
+        ? "📝 请先填写第 0 天基线体重；之后每隔 10 天记录一次，我会按原表标准判断你的节奏。"
+        : "📝 已有基线，再记录下一个 10 天体重，就能判断减脂速度。";
+      return;
+    }
+    const latest = filled[filled.length - 1];
+    const prevRec = filled[filled.length - 2];
+    const loss = round1(prevRec.w - latest.w);
+    const cycleIndex = filled.length - 1;
+    const isFirstCycle = latest.day === 10;
+    const hasBase = db.profile.base === "是";
+    const gender = db.profile.gender || "男";
+
+    let speed = "";
+    let normal = "";
+    if (isFirstCycle) {
+      normal = hasBase ? "0.5 ~ 2.0 kg / 10天" : "0.3 ~ 1.5 kg / 10天";
+      speed = hasBase
+        ? (loss > 2 ? "fast" : (loss < 0.3 ? "slow" : "ok"))
+        : (loss > 1.5 ? "fast" : (loss < 0.2 ? "slow" : "ok"));
+    } else {
+      normal = hasBase ? "0.5 ~ 1.5 kg / 10天" : "0.3 ~ 1.2 kg / 10天";
+      speed = hasBase
+        ? (loss > 1.5 ? "fast" : (loss < 0.3 ? "slow" : "ok"))
+        : (loss > 1.2 ? "fast" : (loss < 0.2 ? "slow" : "ok"));
+    }
+
+    const bonus = paceBonus();
+    let adv = "";
+    if (speed === "fast") {
+      if (gender === "男") {
+        adv = `掉秤过快时建议：碳水 +${20 + bonus}~${30 + bonus} g（男生以碳水供能为主，优先加碳水保护肌肉和训练状态）。`;
+      } else {
+        adv = `掉秤过快时建议：方案A 碳水 +${15 + bonus}~${25 + bonus} g；方案B 脂肪 +5~10 g（女生可二选一）。`;
+      }
+    } else if (speed === "slow") {
+      if (gender === "男") {
+        adv = `掉秤过慢时建议：碳水 −${20 - bonus}~${30 - bonus} g（男生优先减碳水制造缺口；低频训练者可以多减一点）。`;
+      } else {
+        adv = `掉秤过慢时建议：方案A 碳水 −${15 - bonus}~${25 - bonus} g；方案B 脂肪 −5~10 g（女生可二选一）。`;
+      }
+    } else {
+      adv = "当前速度正常，保持现有饮食方案，继续记录下一周期即可。";
+    }
+
+    if (loss <= 0.05 && speed !== "fast") {
+      speed = "stall";
+      adv = `体重几乎没变化，先核对是不是真的吃到了目标量、有没有偷吃油和零食；连续 2 个周期无变化再按“过慢”减碳水或脂肪。`;
+    }
+
+    let head = "";
+    if (speed === "ok") {
+      head = "✅ 速度正常";
+      box.className = "status-box";
+    } else if (speed === "fast") {
+      head = "⚠️ 掉秤过快";
+      box.className = "status-box warn";
+    } else if (speed === "stall") {
+      head = "🐢 体重停滞";
+      box.className = "status-box warn";
+    } else {
+      head = "🐢 掉秤过慢";
+      box.className = "status-box";
+    }
+
+    let note = "";
+    if (isFirstCycle && hasBase) {
+      note = "\n\n💧 你有减脂基础：前 10 天体重下降里含较多水分流失，属正常现象。先以第 20 天数据为准做首次调整，不必急着加碳水。";
+    } else if (isFirstCycle) {
+      note = "\n\n💧 新手前 10 天也有一定水分波动，建议先看第 20 天的趋势再调整。";
+    }
+
+    box.textContent =
+      `${head}｜第 ${latest.day} 天 vs 第 ${prevRec.day} 天\n` +
+      `本期减重：${loss >= 0 ? loss.toFixed(1) : Math.abs(loss).toFixed(1) + "（上涨）"} kg　正常范围：${normal}\n` +
+      `${adv}${note}`;
+  }
+
+  // ---------- 参考表 ----------
+  function buildRefTables() {
+    const host = $("#refTables");
+    const maleRows = FREQ_OPTIONS.map((f) => `
+      <tr><td>${f.label.split(" · ")[0]}</td><td>${f.label.split(" · ")[1]}</td><td>${f.male[0]}</td><td>${f.male[1]}</td><td>${f.male[2]}</td></tr>`).join("");
+    const femaleRows = FREQ_OPTIONS.map((f) => `
+      <tr><td>${f.label.split(" · ")[0]}</td><td>${f.label.split(" · ")[1]}</td><td>${f.female[0]}</td><td>${f.female[1]}</td><td>${f.female[2]}</td></tr>`).join("");
+    host.innerHTML = `
+      <div class="ref-table">
+        <h4>👨 男性系数</h4>
+        <div class="table-scroll"><table>
+          <thead><tr><th>频率</th><th>每周时长</th><th>碳水 g/kg</th><th>蛋白 g/kg</th><th>脂肪 g/kg</th></tr></thead>
+          <tbody>${maleRows}</tbody>
+        </table></div>
+      </div>
+      <div class="ref-table">
+        <h4>👩 女性系数</h4>
+        <div class="table-scroll"><table>
+          <thead><tr><th>频率</th><th>每周时长</th><th>碳水 g/kg</th><th>蛋白 g/kg</th><th>脂肪 g/kg</th></tr></thead>
+          <tbody>${femaleRows}</tbody>
+        </table></div>
+      </div>
+      <div class="ref-table">
+        <h4>📏 健康减脂速度标准（每 10 天）</h4>
+        <div class="table-scroll"><table>
+          <thead><tr><th>减脂基础</th><th>前10天正常</th><th>后续正常</th><th>过快</th><th>过慢</th></tr></thead>
+          <tbody>
+            <tr><td>有</td><td>0.5 ~ 2.0 kg</td><td>0.5 ~ 1.5 kg</td><td>&gt;2.0 / &gt;1.5 kg</td><td>&lt;0.3 kg</td></tr>
+            <tr><td>无</td><td>0.3 ~ 1.5 kg</td><td>0.3 ~ 1.2 kg</td><td>&gt;1.5 / &gt;1.2 kg</td><td>&lt;0.2 kg</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="ref-table">
+        <h4>🏋️ 日型碳水系数（蛋白、脂肪不变）</h4>
+        <div class="table-scroll"><table>
+          <thead><tr><th>日型</th><th>碳水系数</th><th>适用场景</th></tr></thead>
+          <tbody>
+            <tr><td>训练日</td><td>100%</td><td>力量训练日，保证训练强度和恢复</td></tr>
+            <tr><td>有氧/轻训日</td><td>70%</td><td>有氧、瑜伽、轻量训练</td></tr>
+            <tr><td>休息日</td><td>50%</td><td>完全休息 / 久坐</td></tr>
+          </tbody>
+        </table></div>
+      </div>`;
+  }
+
+  // ---------- 表单绑定 ----------
+  function bindProfileForm() {
+    const p = db.profile;
+    $("#pName").value = p.name || "";
+    $("#pGender").value = p.gender || "";
+    $("#pAge").value = p.age || "";
+    $("#pHeight").value = p.height || "";
+    $("#pWeight").value = p.weight || "";
+    $("#pGoal").value = p.goal || "";
+    $("#pFreq").value = p.freq || "mid";
+    $("#pBase").value = p.base || "否";
+  }
+
+  function saveProfileFromForm() {
+    const p = db.profile;
+    p.name = $("#pName").value.trim();
+    p.gender = $("#pGender").value;
+    p.age = $("#pAge").value;
+    p.height = $("#pHeight").value;
+    p.weight = $("#pWeight").value;
+    p.goal = $("#pGoal").value;
+    p.freq = $("#pFreq").value;
+    p.base = $("#pBase").value;
+    saveDb();
+    renderTargets();
+    // 尚未手动填基线时，把当前体重同步成第 0 天基线
+    const hasWeights = Object.keys(db.weights).length > 0;
+    if (!hasWeights && p.weight) {
+      const rec = db.weights["0"] || {};
+      rec.weight = Number(p.weight);
+      rec.date = rec.date || todayStr();
+      db.weights["0"] = rec;
+      saveDb();
+      renderStages();
+    }
+    flashSaved();
+  }
+
+  function syncDayTypeActive() {
+    $$("#dayTypeSeg .seg-item").forEach((b) => b.classList.toggle("active", b.dataset.day === db.dayType));
+  }
+
+  function flashSaved() {
+    const btn = $("#saveProfile");
+    const old = btn.textContent;
+    btn.textContent = "✅ 已保存";
+    setTimeout(() => { btn.textContent = old; }, 1200);
+  }
+
+  // ---------- 启动 ----------
+  function init() {
+    loadDb();
+    initFreqSelect();
+    bindProfileForm();
+    buildRefTables();
+    pickQuote();
+    $("#quoteNext").addEventListener("click", () => {
+      quoteIdx = (quoteIdx + 1) % QUOTES.length;
+      showQuote();
+    });
+
+    $("#saveProfile").addEventListener("click", saveProfileFromForm);
+    $("#clearProfile").addEventListener("click", () => {
+      if (confirm("确定清空本机保存的所有数据吗？此操作不可恢复。")) {
+        localStorage.removeItem(DB_KEY);
+        location.reload();
+      }
+    });
+
+    $("#pFreq").addEventListener("change", () => {
+      db.profile.freq = $("#pFreq").value;
+      saveDb();
+      renderTargets();
+    });
+
+    // 日型
+    $$("#dayTypeSeg .seg-item").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        db.dayType = btn.dataset.day;
+        const log = getLog();
+        log.dayType = db.dayType;
+        saveDb();
+        syncDayTypeActive();
+        renderTargets();
+        renderSummary();
+      });
+    });
+
+    // 日期切换
+    const dateInput = $("#logDate");
+    dateInput.value = db.selectedDate || todayStr();
+    dateInput.addEventListener("change", () => {
+      db.selectedDate = dateInput.value || todayStr();
+      const lg = getLog();
+      if (lg.dayType) {
+        db.dayType = lg.dayType;
+      } else {
+        lg.dayType = db.dayType;
+      }
+      saveDb();
+      syncDayTypeActive();
+      renderMeals();
+      renderTargets();
+    });
+
+    // 日型跟随当天记录恢复
+    const log = getLog();
+    if (log.dayType && DAY_TYPES[log.dayType] !== undefined) {
+      db.dayType = log.dayType;
+    }
+    syncDayTypeActive();
+
+    renderTargets();
+    renderMeals();
+    renderStages();
+    renderSummary();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
